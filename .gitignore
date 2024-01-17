@@ -1,0 +1,9 @@
+#data cache
+data/*/
+
+#hidden folders
+.*/
+
+#python cache files
+__pycache__
+*ipynb_checkpoints/
