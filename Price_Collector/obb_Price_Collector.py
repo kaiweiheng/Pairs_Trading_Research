@@ -16,7 +16,7 @@ class obb_Price_Collector(Price_Collector):
 		self.arg = arg
 	
 	@staticmethod
-	def get_price_for_a_stock(ticker, start_date = '2000-01-01', end_date = '2024-01-06'):
+	def get_price_for_a_stock(ticker, start_date = '2000-01-01', end_date = '2024-01-20'):
 
 		# US_daily = openbb.stocks.load(symbol = US_ticker,start_date = '2000-11-01', source = "AlphaVantage")
 		path = os.path.join('data','raw','openbb','%s.csv'%(ticker))

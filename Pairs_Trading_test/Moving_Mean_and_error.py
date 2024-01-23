@@ -1,0 +1,1 @@
+#to address mean of regression moving, try and compare simple regression, rolling regression and kalman filter

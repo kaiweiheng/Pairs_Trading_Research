@@ -1,0 +1,1 @@
+#giving an universe of stocks, find product pairs able to execute pairs trading
