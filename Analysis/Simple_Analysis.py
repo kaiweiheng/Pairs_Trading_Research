@@ -32,16 +32,16 @@ class Simple_Analysis(object):
 			dftest = adfuller(column_data.dropna().values)
 			p_value =  dftest[1]
 
-			text += "%s p-value : %.3f%%, mean : %.5f, std : %.3f \n"%(column_name, p_value*100, np.mean(column_data.dropna().values), np.std(column_data.dropna().values))
+			text += "%s DickyFuller P-value : %.3f%%, mean : %.3f, std : %.3f \n"%(column_name, p_value*100, np.mean(column_data.dropna().values), np.std(column_data.dropna().values))
 
 		ax.legend(loc = 'upper right',prop={'size': 8})
 		ax.set_title(text)
 		plt.close(fig) #not showing in the jupyter lab
 
 		if if_save:
-			fig.savefig(output_path, dpi = 250)
 			output_path = os.path.join('data','output',"%s_histogram.png"%(file_name))
 			check_parents_dir_exist(output_path)
+			fig.savefig(output_path, dpi = 250)
 		
 		return ax, fig
 
@@ -53,13 +53,10 @@ class Simple_Analysis(object):
 		date = df.index.to_list()
 
 		plt.rcParams['font.size'] = 7		
-		output_path = os.path.join(output_path)
-		check_parents_dir_exist(output_path)
 		fig, ax = plt.subplots()
 		fig.set_figheight(8)
 		fig.set_figwidth(int(len(date))/10)
 
-		print(output_path)
 		acc = 0
 		for (column_name, column_data) in df.items():
 			y = column_data.values
@@ -67,16 +64,36 @@ class Simple_Analysis(object):
 			acc += 1
 
 		ax.set(xlabel='time', ylabel= df.columns[0], title='Record')
-		ax.grid(color = 'w', linewidth = 0.1)
+		ax.grid(color = 'w', linewidth = 0.2)
 		plt.legend(loc = 'upper right',prop={'size': 8})
 
 		ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
 		# ax.xaxis.set_major_locator(mdates.DayLocator(interval=int(  len(date)/10 )))
-		ax.xaxis.set_major_locator(mdates.DayLocator(interval=int(5)))
+		ax.xaxis.set_major_locator(mdates.DayLocator(interval=int(2)))
 		ax.tick_params(axis='x', labelrotation=45, labelsize=5)
 
 		plt.close(fig) #not showing in the jupyter lab
 		if if_save:
+			# output_path = os.path.join(output_path)
+			check_parents_dir_exist(output_path)
 			fig.savefig(output_path, dpi = 250)
 		return ax, fig
 
+	@staticmethod
+	def plot_adf(df, output_path, if_save = True):
+		maxlags = 200
+		plt.style.use('seaborn-deep')
+		fig, ax = plt.subplots()
+
+		for (column_name, column_data) in df.items():
+			ax.acorr(column_data.dropna().values, usevlines = False, normed = True, maxlags = maxlags, label = column_name, marker = '.', markersize = 1, lw = 2)
+
+		ax.grid(color = 'w', linewidth = 0.2)
+		ax.set(xlabel='Lags', ylabel= 'Self-Correlation')
+		plt.xlim([0, maxlags])
+		plt.legend(loc = 'upper right',prop={'size': 8})
+		if if_save:
+			# output_path = os.path.join(output_path)
+			check_parents_dir_exist(output_path)
+			fig.savefig(output_path, dpi = 250)
+		return ax, fig
