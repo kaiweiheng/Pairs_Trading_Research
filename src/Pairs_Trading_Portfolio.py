@@ -31,49 +31,28 @@ class Pairs_Trading_Portfolio(Portfolio):
 
 		self.test_dftest_p_value , self.train_dftest_p_value = adfuller(test_residue)[1] , adfuller(training_residue)[1]
 		
-		if self.test_dftest_p_value < 0.01:
-			print("\n %s train P-value : %.5f%% ; test P-value : %.5f%%\n"%(self.holdings, self.train_dftest_p_value*100 , self.test_dftest_p_value*100 ) )
+		print("\n %s train P-value : %.5f%% ; test P-value : %.5f%%\n"%(self.holdings, self.train_dftest_p_value*100 , self.test_dftest_p_value*100 ) )
+
+		residue_df = pd.concat( [pd.DataFrame({'train_residue' : training_residue}), pd.DataFrame({'test_residue':test_residue}) ], axis = 1)
+		Simple_Analysis.return_histogram(residue_df , os.path.join('data','output',"%s_%s_histogram.png"%(self.holdings[0], self.holdings[1])) )
+		
+		Simple_Analysis.plot_adf(residue_df, os.path.join('data','output',"%s_%s_adf.png"%(self.holdings[0],self.holdings[1])) )
+
+		train_residue_df = pd.DataFrame({ 'residue' : training_residue, 'mean' : np.mean(training_residue), '-1_std' : np.mean(training_residue) - np.std(training_residue), '+1_std' : np.mean(training_residue) + np.std(training_residue) }, index = train.index)
+		Simple_Analysis.plot_time_series_df(train_residue_df, linestyles = ['dotted','-','-.','-.'], colors =  ['w','c','c','c'] , output_path = os.path.join('data','output',"%s_%s_train.png"%(self.holdings[0],self.holdings[1])))
 
 
-			residue_df = pd.concat( [pd.DataFrame({'train_residue' : training_residue}), pd.DataFrame({'test_residue':test_residue}) ], axis = 1)
-			Simple_Analysis.return_histogram(residue_df , "%s_%s.png"%(self.holdings[0],self.holdings[1]))
-			
-			Simple_Analysis.plot_adf(residue_df, os.path.join('data','output',"%s_%s_adf.png"%(self.holdings[0],self.holdings[1])) )
-
-
-			train_residue_df = pd.DataFrame({ 'residue' : training_residue, 'mean' : np.mean(training_residue), '-1_std' : np.mean(training_residue) - np.std(training_residue), '+1_std' : np.mean(training_residue) + np.std(training_residue) }, index = train['date'])
-			Simple_Analysis.plot_time_series_df(train_residue_df, linestyles = ['dotted','-','-.','-.'], colors =  ['w','c','c','c'] , output_path = os.path.join('data','output',"%s_%s_train.png"%(self.holdings[0],self.holdings[1])))
-
-
-			test_residue_df = pd.DataFrame({ 'residue' : test_residue, 'mean' : np.mean(test_residue), '-1_std' : np.mean(test_residue) - np.std(test_residue), '+1_std' : np.mean(test_residue) +  np.std(test_residue) }, index = test['date'])
-			Simple_Analysis.plot_time_series_df(test_residue_df, linestyles = ['dotted','-','-.','-.'], colors =  ['w','c','c','c'] , output_path = os.path.join('data','output',"%s_%s_test.png"%(self.holdings[0],self.holdings[1])))
+		test_residue_df = pd.DataFrame({ 'residue' : test_residue, 'mean' : np.mean(test_residue), '-1_std' : np.mean(test_residue) - np.std(test_residue), '+1_std' : np.mean(test_residue) +  np.std(test_residue) }, index = test.index)
+		Simple_Analysis.plot_time_series_df(test_residue_df, linestyles = ['dotted','-','-.','-.'], colors =  ['w','c','c','c'] , output_path = os.path.join('data','output',"%s_%s_test.png"%(self.holdings[0],self.holdings[1])))
 
 		
-	
-	def make_regression(self, dataset):
-		#to make a LS regression to get gama (hedge ratio) and mu (offset term)
-		x, y = dataset['%s_c'%(self.holdings[0]) ].to_numpy(), dataset[ '%s_c'%(self.holdings[1])  ].to_numpy()
-		gama, mu = np.linalg.lstsq(np.vstack([x, np.ones(len(x)) ]).T, y, rcond=None)[0] # slop : gama, interception : mu
-		return gama, mu
-
-
-	def get_residue(self, dataset, gama, mu):
-		#get residue according to previous 
-		x, y = dataset['%s_c'%(self.holdings[0]) ].to_numpy(), dataset[ '%s_c'%(self.holdings[1])  ].to_numpy()
-		return y - x * gama + mu
-
-	def plot_histogram():
-
-
-		return 0
-
 if __name__ == '__main__':
 
-	# Pairs_Trading_Portfolio(holdings = ['SQQQ','TQQQ'], price_starting_date = '2015-01-01')
 	# Pairs_Trading_Portfolio(holdings = ['USD','HKD'], price_starting_date = '2015-01-01')
-	# Pairs_Trading_Portfolio(holdings = ["0005.HK","0011.HK"], price_starting_date = '2015-01-01')		
-	# Pairs_Trading_Portfolio(holdings = ['EWH','EWZ'], price_starting_date = '2015-01-01')
-	# Pairs_Trading_Portfolio(holdings = ['AME','DOV'], price_starting_date = '2015-01-01')
+	Pairs_Trading_Portfolio(holdings = ["0005.HK","0011.HK"], price_starting_date = '2015-01-01')		
+	Pairs_Trading_Portfolio(holdings = ['EWH','EWZ'], price_starting_date = '2015-01-01')
+	Pairs_Trading_Portfolio(holdings = ['AME','DOV'], price_starting_date = '2015-01-01')
 
+	Pairs_Trading_Portfolio(holdings = ['SQQQ','TQQQ'], price_starting_date = '2015-01-01')
 	Pairs_Trading_Portfolio(holdings = ['QQQ','QQQM'], price_starting_date = '2015-01-01')
 	Pairs_Trading_Portfolio(holdings = ["VIXY","VXX"], price_starting_date = '2015-01-01')

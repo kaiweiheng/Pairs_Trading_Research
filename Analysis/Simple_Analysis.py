@@ -16,7 +16,7 @@ class Simple_Analysis(object):
 		self.arg = arg
 	
 	@staticmethod
-	def return_histogram(df,  file_name, if_save = True):
+	def return_histogram(df,  output_path, if_save = True):
 		#pass in a dataframe, plot distribution of df with the colunm name as label
 		#a description of each col's p value will be appended
 
@@ -24,7 +24,7 @@ class Simple_Analysis(object):
 		n_bins = 100
 		plt.rcParams['font.size'] = 7		
 
-		text = '%s Residue Histogram\n'%(file_name)
+		text = '%s Residue Histogram\n'%(output_path)
 		fig, ax = plt.subplots()
 		for (column_name, column_data) in df.items():
 			ax.hist( column_data.dropna().values , n_bins, histtype='step', stacked=True, fill=False, density = True, label = column_name)		
@@ -32,14 +32,15 @@ class Simple_Analysis(object):
 			dftest = adfuller(column_data.dropna().values)
 			p_value =  dftest[1]
 
-			text += "%s DickyFuller P-value : %.3f%%, mean : %.3f, std : %.3f \n"%(column_name, p_value*100, np.mean(column_data.dropna().values), np.std(column_data.dropna().values))
+			text += "%s DickyFuller P-value : %.5f%%, mean : %.3f, std : %.3f \n"%(column_name, p_value*100, np.mean(column_data.dropna().values), np.std(column_data.dropna().values))
 
 		ax.legend(loc = 'upper right',prop={'size': 8})
 		ax.set_title(text)
 		plt.close(fig) #not showing in the jupyter lab
 
 		if if_save:
-			output_path = os.path.join('data','output',"%s_histogram.png"%(file_name))
+			# output_path = os.path.join('data','output',"%s_histogram.png"%(file_name))
+			print(output_path)
 			check_parents_dir_exist(output_path)
 			fig.savefig(output_path, dpi = 250)
 		
