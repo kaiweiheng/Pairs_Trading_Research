@@ -36,14 +36,7 @@ class Portfolio(object):
 	def make_regression(self, dataset):
 		#to make a LS regression to get gama (hedge ratio) and mu (offset term)
 
-		#to reorder dataset col, order as same as self.holdings
-		dataset = Portfolio.reorder_dataset_as_holdings(dataset, self.holdings)
-
-		if type(dataset) == bool and  dataset == False:
-			raise TypeError("Not All holdings have Price")
-
-		#regression target y : 1st col in dataset, regresion input : reset of col start from 2nd col 
-		y, x = dataset.iloc[:, 0 : 1].to_numpy(), dataset.iloc[:, 1:].to_numpy()
+		y, x = Portfolio.split_variables_explanatory_and_independent(dataset, self.holdings)		
 
 		# gama :class 'numpy.ndarray' [float] ; mu : class 'numpy.ndarray' [float]
 		gama, mu = np.linalg.lstsq(np.hstack([x, np.ones( (len(x), 1)  ) ]), y, rcond=None)[0] # slop : gama, interception : mu
@@ -54,8 +47,16 @@ class Portfolio(object):
 	def get_residue(self, dataset, gama, mu):
 		# gama : [float] ; mu : [float]
 		
+		y, x = Portfolio.split_variables_explanatory_and_independent(dataset, self.holdings)
+
+		residue = y - x * gama + mu
+		return residue[:,0]
+
+	@staticmethod 
+	def split_variables_explanatory_and_independent(dataset, holdings):
+
 		#to reorder dataset col, order as same as self.holdings
-		dataset = Portfolio.reorder_dataset_as_holdings(dataset, self.holdings)
+		dataset = Portfolio.reorder_dataset_as_holdings(dataset, holdings)
 
 		if type(dataset) == bool and  dataset == False:
 			raise TypeError("Not All holdings have Price")
@@ -63,8 +64,7 @@ class Portfolio(object):
 		#regression target y : 1st col in dataset, regresion input : reset of col start from 2nd col 
 		y, x = dataset.iloc[:, 0 : 1].to_numpy(), dataset.iloc[:, 1:].to_numpy()
 
-		residue = y - x * gama + mu
-		return residue[:,0]
+		return y, x
 
 	@staticmethod
 	def reorder_dataset_as_holdings(dataset, holdings):

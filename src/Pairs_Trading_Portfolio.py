@@ -21,7 +21,7 @@ class Pairs_Trading_Portfolio(Portfolio):
 		super().__init__( **arg )
 
 		dataset = self.inst_price
-		train, test = train_test_split(dataset, test_size=0.6, shuffle = False)
+		train, test = train_test_split(dataset, test_size=0.7, shuffle = False)
 
 		gama, mu  = self.make_regression(train)
 

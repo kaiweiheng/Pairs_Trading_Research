@@ -27,7 +27,7 @@ class Pairs_Trading_RLS_Portfolio(Portfolio):
 
 		# dataset =  Portfolio.sliding_window_split(dataset, 25)
 
-		train, test = train_test_split(dataset, test_size=0.6, shuffle = False)
+		train, test = train_test_split(dataset, test_size=0.7, shuffle = False)
 
 		training_residue, test_residue = [], []		
 		for item in train:

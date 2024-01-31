@@ -9,6 +9,8 @@ from statsmodels.tsa.stattools import adfuller
 sys.path.append("util")
 from path import *
 
+# https://stackoverflow.com/questions/66369315/how-to-assign-axes-from-one-figure-to-axes-from-another-figure
+
 class Simple_Analysis(object):
 	"""docstring for Simple_Analysis"""
 	def __init__(self, arg):
@@ -40,7 +42,6 @@ class Simple_Analysis(object):
 
 		if if_save:
 			# output_path = os.path.join('data','output',"%s_histogram.png"%(file_name))
-			print(output_path)
 			check_parents_dir_exist(output_path)
 			fig.savefig(output_path, dpi = 250)
 		
