@@ -8,7 +8,7 @@ from openbb_terminal.helper_classes import TerminalStyle
 from openbb_terminal.core.config.paths import REPOSITORY_DIRECTORY
 
 from Price_Collector import *
-import datetime
+from datetime import datetime
 class obb_Price_Collector(Price_Collector):
 	"""docstring for obb_Price_Collector"""
 	def __init__(self, arg):
@@ -16,7 +16,7 @@ class obb_Price_Collector(Price_Collector):
 		self.arg = arg
 	
 	@staticmethod
-	def get_price_for_a_stock(ticker, start_date = '2000-01-01', end_date = '2024-01-28'):
+	def get_price_for_a_stock(ticker, start_date = '2000-01-01', end_date = datetime.today().strftime('%Y-%m-%d')):
 
 		# US_daily = openbb.stocks.load(symbol = US_ticker,start_date = '2000-11-01', source = "AlphaVantage")
 		path = os.path.join('data','raw','openbb','%s.csv'%(ticker))

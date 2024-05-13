@@ -4,7 +4,7 @@ import datetime
 
 sys.path.append("Price_Collector")
 from Instrument import *
-
+from sklearn.model_selection import train_test_split
 class Portfolio(object):
 	"""docstring for Portfolio"""
 	def __init__(self, **arg):
@@ -19,6 +19,12 @@ class Portfolio(object):
 		self.inst_price = self.inst_list[0].price
 		for inst in self.inst_list[1:]:
 			self.inst_price = pd.merge(self.inst_price, inst.price, how = 'inner', left_on = 'date', right_on = 'date').set_index('date')
+
+		train, test = train_test_split(self.inst_price, test_size=0.7, shuffle = False)
+		train['dataset_tag'] = 'train'
+		test['dataset_tag'] = 'test'
+
+		self.inst_price = pd.concat([train, test])
 
 		#do 
 		# self.inst_stad_price = self.inst_list[0].stad_price
@@ -49,7 +55,7 @@ class Portfolio(object):
 		
 		y, x = Portfolio.split_variables_explanatory_and_independent(dataset, self.holdings)
 
-		residue = y - x * gama + mu
+		residue = y - (x * gama + mu)
 		return residue[:,0]
 
 	@staticmethod 
@@ -63,7 +69,7 @@ class Portfolio(object):
 
 		#regression target y : 1st col in dataset, regresion input : reset of col start from 2nd col 
 		y, x = dataset.iloc[:, 0 : 1].to_numpy(), dataset.iloc[:, 1:].to_numpy()
-
+		
 		return y, x
 
 	@staticmethod

@@ -34,7 +34,7 @@ class Simple_Analysis(object):
 			dftest = adfuller(column_data.dropna().values)
 			p_value =  dftest[1]
 
-			text += "%s DickyFuller P-value : %.5f%%, mean : %.3f, std : %.3f \n"%(column_name, p_value*100, np.mean(column_data.dropna().values), np.std(column_data.dropna().values))
+			text += "%s DickyFuller P-value : %.3g%%, mean : %.3f, std : %.3f \n"%(column_name, p_value*100, np.mean(column_data.dropna().values), np.std(column_data.dropna().values))
 
 		ax.legend(loc = 'upper right',prop={'size': 8})
 		ax.set_title(text)
@@ -62,7 +62,7 @@ class Simple_Analysis(object):
 		acc = 0
 		for (column_name, column_data) in df.items():
 			y = column_data.values
-			ax.plot(date, y, color = colors[acc] , linestyle = linestyles[acc] ,linewidth=0.25, label = column_name)
+			ax.plot(date, y, color = colors[acc] , linestyle = linestyles[acc] ,linewidth=0.35, label = column_name)
 			acc += 1
 
 		ax.set(xlabel='time', ylabel= df.columns[0], title='Record')
@@ -83,7 +83,7 @@ class Simple_Analysis(object):
 
 	@staticmethod
 	def plot_adf(df, output_path, if_save = True):
-		maxlags = 200
+		maxlags = 100
 		plt.style.use('seaborn-deep')
 		fig, ax = plt.subplots()
 
