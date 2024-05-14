@@ -15,6 +15,8 @@ from statsmodels.tsa.stattools import adfuller
 from sklearn.model_selection import train_test_split
 from KalmanFilter import KalmanFilter
 
+from Signal_Generator import Signal_Generator
+
 
 class Pairs_Trading_Kalman_Portfolio(Portfolio):
 	"""docstring for Pairs_Trading_Portfolio"""
@@ -97,8 +99,16 @@ class Pairs_Trading_Kalman_Portfolio(Portfolio):
 		self.test_dftest_p_value , self.train_dftest_p_value = adfuller( self.dataset[ self.dataset['dataset_tag'] == 'test' ]['residue'] )[1] , adfuller( self.dataset[ self.dataset['dataset_tag'] == 'train' ]['residue'] )[1]
 		
 
-		print("\n %s train P-value : %.3g%% ; test P-value : %.3g%% \n"%(self.holdings, self.train_dftest_p_value*100 , self.test_dftest_p_value*100 ) )
+		print("\n %s\
+			\ntrain P-value : %.3g%% residue mean %.3f ,std %.3f; \
+			\ntest  P-value : %.3g%% residue mean %.3f ,std %.3f \n"%(
+		   	self.holdings, self.train_dftest_p_value*100 , np.mean(  self.dataset[ self.dataset['dataset_tag'] == 'train' ]['residue'] ), np.std( self.dataset[ self.dataset['dataset_tag'] == 'train' ]['residue'] ) , 
+		   	self.test_dftest_p_value*100, np.mean(  self.dataset[ self.dataset['dataset_tag'] == 'test' ]['residue'] ), np.std( self.dataset[ self.dataset['dataset_tag'] == 'test' ]['residue'] )  ) )
+		
+		sg = Signal_Generator(self.dataset, self.holdings)
+		sg.generate_optimal()
 
+		self.dataset = sg.dataset
 
 
 	def plot(self):
@@ -124,16 +134,21 @@ class Pairs_Trading_Kalman_Portfolio(Portfolio):
 if __name__ == '__main__':
 
 	KF = Pairs_Trading_Kalman_Portfolio(holdings = ['PEP','KO'], price_starting_date = '2015-01-01')
-	KF.plot()
+	# KF.plot()
 	KF.dataset.to_csv("./data/output_Kalman/Kalman_PEP_KO.csv")
 
 	KF = Pairs_Trading_Kalman_Portfolio(holdings = ['VOO','SPY'], price_starting_date = '2015-01-01')
-	KF.plot()
+	# KF.plot()
 	KF.dataset.to_csv("./data/output_Kalman/Kalman_VOO_SPY.csv")
 
 	KF = Pairs_Trading_Kalman_Portfolio(holdings = ['QQQ','QQQM'], price_starting_date = '2015-01-01')
-	KF.plot()
+	# KF.plot()
 	KF.dataset.to_csv("./data/output_Kalman/Kalman_QQQ_QQQM.csv")	
+
+	KF = Pairs_Trading_Kalman_Portfolio(holdings = ["0005.HK","0011.HK"], price_starting_date = '2015-01-01')
+	# KF.plot()
+	KF.dataset.to_csv("./data/output_Kalman/Kalman_0005_0011.csv")	
+
 
 	# Pairs_Trading_Kalman_Portfolio(holdings = ['SQQQ','TQQQ'], price_starting_date = '2015-01-01').plot()
 	# Pairs_Trading_Kalman_Portfolio(holdings = ["0005.HK","0011.HK"], price_starting_date = '2015-01-01').plot()	

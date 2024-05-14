@@ -14,6 +14,8 @@ from Simple_Analysis import Simple_Analysis
 from statsmodels.tsa.stattools import adfuller
 from sklearn.model_selection import train_test_split
 
+sys.path.append("src")
+from Signal_Generator import Signal_Generator
 
 class Pairs_Trading_RLS_Portfolio(Portfolio):
 	"""docstring for Pairs_Trading_RLS_Portfolio
@@ -65,8 +67,17 @@ class Pairs_Trading_RLS_Portfolio(Portfolio):
 		self.test_dftest_p_value , self.train_dftest_p_value = adfuller( self.dataset[ self.dataset["dataset_tag"] == "test" ]['residue'] )[1] , adfuller(self.dataset[ self.dataset["dataset_tag"] == "train" ]['residue'])[1]
 		
 
-		print("\n %s train P-value :  %.3g%% ; test P-value : %.3g%%\n"%(self.holdings, self.train_dftest_p_value*100 , self.test_dftest_p_value*100 ) )
-	
+		print("\n %s\
+		\ntrain P-value : %.3g%% residue mean %.3f ,std %.3f ; \
+		\ntest  P-value : %.3g%% residue mean %.3f ,std %.3f \n"%(
+		self.holdings, self.train_dftest_p_value*100 , np.mean(  self.dataset[ self.dataset['dataset_tag'] == 'train' ]['residue'] ), np.std( self.dataset[ self.dataset['dataset_tag'] == 'train' ]['residue'] ) , 
+		self.test_dftest_p_value*100, np.mean(  self.dataset[ self.dataset['dataset_tag'] == 'test' ]['residue'] ), np.std( self.dataset[ self.dataset['dataset_tag'] == 'test' ]['residue'] )  ) )
+
+
+		sg = Signal_Generator(self.dataset, self.holdings)
+		sg.generate_optimal()
+		self.dataset = sg.dataset
+
 	def plot(self):
 
 		# train, test = train_test_split(self.dataset, test_size=0.7, shuffle = False)
@@ -89,17 +100,21 @@ if __name__ == '__main__':
 
 	# Pairs_Trading_RLS_Portfolio(holdings = ['USD','HKD'], price_starting_date = '2015-01-01')
 	RLS = Pairs_Trading_RLS_Portfolio(holdings = ["PEP","KO"], price_starting_date = '2015-01-01')
-	RLS.plot()
+	# RLS.plot()
 	RLS.dataset.to_csv("./data/output_RLS/RLS_PEP_KO.csv")
 
 	RLS = Pairs_Trading_RLS_Portfolio(holdings = ["VOO","SPY"], price_starting_date = '2015-01-01')
-	RLS.plot()
+	# RLS.plot()
 	RLS.dataset.to_csv("./data/output_RLS/RLS_VOO_SPY.csv")
 
 	RLS = Pairs_Trading_RLS_Portfolio(holdings = ['QQQ','QQQM'], price_starting_date = '2015-01-01')
-	RLS.plot()
+	# RLS.plot()
 	RLS.dataset.to_csv("./data/output_RLS/RLS_QQQ_QQQM.csv")
-	# Pairs_Trading_RLS_Portfolio(holdings = ["0005.HK","0011.HK"], price_starting_date = '2015-01-01')	
+
+	RLS = Pairs_Trading_RLS_Portfolio(holdings = ["0005.HK","0011.HK"], price_starting_date = '2015-01-01')	
+	# RLS.plot()
+	RLS.dataset.to_csv("./data/output_RLS/RLS_0005_0011.csv")
+
 	# Pairs_Trading_RLS_Portfolio(holdings = ['EWH','EWZ'], price_starting_date = '2015-01-01')
 	# Pairs_Trading_RLS_Portfolio(holdings = ['AME','DOV'], price_starting_date = '2015-01-01')
 

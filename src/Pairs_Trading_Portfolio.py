@@ -46,6 +46,10 @@ class Pairs_Trading_Portfolio(Portfolio):
 		
 		self.dataset = dataset
 
+		sg = Signal_Generator(self.dataset, self.holdings)
+		sg.generate_optimal()
+		self.dataset = sg.dataset		
+
 	def plot(self):
 
 		# train, test = train_test_split(self.dataset, test_size=0.7, shuffle = False)

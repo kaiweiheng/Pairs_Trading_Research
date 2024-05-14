@@ -23,6 +23,7 @@ class Simple_Analysis(object):
 		#a description of each col's p value will be appended
 
 		plt.style.use('seaborn-deep')
+		# n_bins = int(len(df)/1.2)
 		n_bins = 100
 		plt.rcParams['font.size'] = 7		
 
