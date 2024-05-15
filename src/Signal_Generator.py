@@ -66,8 +66,40 @@ class Signal_Generator(object):
 		for hold in self.holdings:
 			self.dataset["%s_Signal"%(hold)] = 0
 
+		'''
+		### for the whole portfolio level ###
+
+		Short the Signal, Signal = -1
+
+		Long the Signal,  Signal = 1
+
+		#####################################
+		'''
+		#if residue > upper_bond, we short the portfolio
 		self.dataset.loc[self.dataset['residue'] > self.upper_bound , 'Signal' ] = -1
+		
+		#if residue > upper_bond, we long the portfolio
 		self.dataset.loc[self.dataset['residue'] < self.lower_bound , 'Signal' ] = 1
+
+		'''
+		### for each stock in the portfolio, assumeing all Gamas are positive ###
+
+		--Regression Target (the first stock)
+
+			Short the whole portfolio -> Short this stock   -1 ->-1
+
+			Long the whole portfolio  -> Long this stock     1 -> 1
+
+		--Explanatory Input (Rest of the Stock)
+
+			Short the whole portfolio -> Long this stock   -1 -> 1
+
+			Long the whole portfolio  -> Short this stock   1 ->-1
+
+
+		######################################
+
+		'''
 
 		for i in range(0,len(self.holdings)):
 			if i == 0:
